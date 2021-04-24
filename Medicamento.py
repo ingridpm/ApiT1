@@ -18,3 +18,9 @@ class Medicamento():
             "cantidad": self.cantidad
         }
     
+    def editar(self,nombre,precio,descripcion,cantidad):
+        self.nombre = nombre
+        self.precio = precio
+        self.descripcion = descripcion
+        self.cantidad = cantidad
+    

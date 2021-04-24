@@ -98,6 +98,29 @@ def obtener_medicamentos():
     for medicamento in medicamentos:
         json_medicamentos.append(medicamento.get_json())
     return jsonify(json_medicamentos)
+
+@app.route('/eliminar_medicamento', methods=['POST'])
+def eliminar_medicamento():
+    cuerpo = request.get_json()
+    indice = cuerpo['indice']
+    i = int(indice)
+    global medicamentos
+    medicamentos.pop(i)
+    return jsonify({"mensaje":"Eliminado exitosamente"})
+
+@app.route('/editar_medicamento', methods=['POST'])
+def editar_medicamento():
+    cuerpo = request.get_json()
+    indice = cuerpo['indice']
+    nombre = cuerpo['nombre']
+    precio = cuerpo['precio']
+    descripcion = cuerpo['descripcion']
+    cantidad = cuerpo['cantidad']
+    i = int(indice)
+    global medicamentos
+    medicamentos[i].editar(nombre,precio,descripcion,cantidad)
+    return jsonify(medicamentos[i].get_json())
+
 #FIN CRUD MEDICAMENTOS  
 
 if __name__ == '__main__':
