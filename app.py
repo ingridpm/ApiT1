@@ -23,7 +23,6 @@ citas = []
 doctores = []
 
 pacientes.append(Paciente("Ingrid","Pérez","","","ingrid","1234","24452452"))
-citas.append(Cita("fecha","hora","motivo",0))
 
 @app.route('/', methods=['GET'])
 def principal():
