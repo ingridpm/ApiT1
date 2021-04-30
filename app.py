@@ -23,6 +23,7 @@ citas = []
 doctores = []
 
 pacientes.append(Paciente("Ingrid","Pérez","","","ingrid","1234","24452452"))
+citas.append(Cita("fecha","hora","motivo",0))
 
 @app.route('/', methods=['GET'])
 def principal():
@@ -185,7 +186,7 @@ def tiene_cita():
     for cita in citas:
         if cita.paciente == int(indice):
             if cita.estado == "Pendiente" or cita.estado == "Aceptada":
-                return jsonify({'estado':1, 'mensaje':'Tiene una cita pendiente o aceptada.', 'fecha':cita.fecha, 'hora':cita.hora,'estado':cita.estado,'doctor':cita.doctor})
+                return jsonify({'estado':1, 'mensaje':'Tiene una cita pendiente o aceptada.', 'fecha':cita.fecha, 'hora':cita.hora,'estado_cita':cita.estado,'doctor':cita.doctor})
     return jsonify({'estado':0, 'mensaje':'No tiene citas pendientes.'})
 #FIN PACIENTE
 
