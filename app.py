@@ -4,6 +4,7 @@ import json
 import os
 from Paciente import Paciente
 from Medicamento import Medicamento
+from Cita import Cita
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +19,10 @@ administrador = {
 
 pacientes = []
 medicamentos = []
+citas = []
+doctores = []
+
+pacientes.append(Paciente("Ingrid","Pérez","","","ingrid","1234","24452452"))
 
 @app.route('/', methods=['GET'])
 def principal():
@@ -54,19 +59,26 @@ def login():
     contrasena = request.args.get("contrasena")
     if not existe_usuario(nombre_usuario):
         return jsonify({'estado': 0, 'mensaje':'No existe este usuario'})
-    if verificar_contrasena(nombre_usuario,contrasena):
-        return jsonify({'estado': 1, 'mensaje':'Login exitoso'})
+    usuario = verificar_contrasena(nombre_usuario,contrasena)
+    if usuario == 1 or usuario == 2:
+        return jsonify({'estado': usuario, 'mensaje':'Login exitoso', 'indice': get_indice_usuario(nombre_usuario)})
     return jsonify({'estado': 0, 'mensaje':'La contraseña es incorrecta'})
     
 
 def verificar_contrasena(nombre_usuario, contrasena):
     if nombre_usuario == administrador['nombre_usuario'] and contrasena == administrador['contrasena']:
-        return True
+        return 1
     global pacientes
     for paciente in pacientes:
         if paciente.nombre_usuario == nombre_usuario and paciente.contrasena == contrasena:
-            return True
-    return False
+            return 2
+    return 0
+
+def get_indice_usuario(nombre_usuario):
+    for i in range(len(pacientes)):
+        if pacientes[i].nombre_usuario == nombre_usuario:
+            return i
+    return -1
 
 def existe_usuario(nombre_usuario):
     if nombre_usuario == administrador['nombre_usuario']:
@@ -122,6 +134,60 @@ def editar_medicamento():
     return jsonify(medicamentos[i].get_json())
 
 #FIN CRUD MEDICAMENTOS  
+
+#INICIO CITAS
+@app.route('/obtener_citas', methods=['GET'])
+def obtener_citas():
+    json_citas = []
+    global citas
+    for cita in citas:
+        json_citas.append(cita.get_json())
+    return jsonify(json_citas)
+
+@app.route('/obtener_citas_enfermera', methods=['GET'])
+def obtener_citas():
+    json_citas = []
+    global citas
+    for cita in citas:
+        if cita.estado = "Pendiente":
+            json_citas.append(cita.get_json())
+    return jsonify(json_citas)
+
+@app.route('/citas_doctor', methods=['GET'])
+def obtener_citas():
+    indice = request.args.get("id_doctor")
+    i = int(indice)
+    json_citas = []
+    global citas
+    for cita in citas:
+        if cita.doctor = i and cita.estado="Aceptada":
+            json_citas.append(cita.get_json())
+    return jsonify(json_citas)    
+
+@app.route('/solicitar_cita', methods=['POST'])
+def solicitar_cita():
+    cuerpo = request.get_json()
+    indice = cuerpo['id']
+    fecha = cuerpo['fecha']
+    hora = cuerpo['hora']
+    motivo = cuerpo['motivo']
+    i = int(indice)
+    global citas
+    citas.append(Cita(fecha,hora,motivo,i))
+    return jsonify({"mensaje":"Cita creada exitosamente"})
+#FIN CITAS
+
+#INICIO PACIENTE
+@app.route('/tiene_cita', methods=['GET'])
+def tiene_cita():
+    indice = request.args.get("id")
+    global citas
+    for cita in citas:
+        if cita.paciente == int(indice):
+            if cita.estado == "Pendiente" or cita.estado == "Aceptada":
+                return jsonify({'estado':1, 'mensaje':'Tiene una cita pendiente o aceptada.'})
+    return jsonify({'estado':0, 'mensaje':'No tiene citas pendientes.'})
+#FIN PACIENTE
 
 if __name__ == '__main__':
     puerto = int(os.environ.get('PORT', 3000))
