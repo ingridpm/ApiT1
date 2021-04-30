@@ -145,22 +145,22 @@ def obtener_citas():
     return jsonify(json_citas)
 
 @app.route('/obtener_citas_enfermera', methods=['GET'])
-def obtener_citas():
+def obtener_citas_enfermera():
     json_citas = []
     global citas
     for cita in citas:
-        if cita.estado = "Pendiente":
+        if cita.estado == "Pendiente":
             json_citas.append(cita.get_json())
     return jsonify(json_citas)
 
 @app.route('/citas_doctor', methods=['GET'])
-def obtener_citas():
+def citas_doctor():
     indice = request.args.get("id_doctor")
     i = int(indice)
     json_citas = []
     global citas
     for cita in citas:
-        if cita.doctor = i and cita.estado="Aceptada":
+        if cita.doctor == i and cita.estado=="Aceptada":
             json_citas.append(cita.get_json())
     return jsonify(json_citas)    
 
